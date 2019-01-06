@@ -18,6 +18,7 @@
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Location}
  * @see {@link https://gist.github.com/john-yuan/65d371be11da0b64636fc3d864ac44a8}
+ * @see {@link https://github.com/john-yuan/snippets/blob/master/parseURL.js}
  * 
  * Note: The default value of the properties in the information is an empty string.
  * 
