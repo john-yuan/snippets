@@ -19,6 +19,7 @@
  * See the function demoRender(current: number, pages: number[]) below.
  *
  * @see {@link https://gist.github.com/john-yuan/11a05426963ed28f9bc43bb2465be3e8}
+ * @see {@link https://github.com/john-yuan/snippets/blob/master/pagination.js}
  * 
  * @author John Yuan <https://github.com/john-yuan>
  * @param {number} current - The current page number
