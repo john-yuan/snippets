@@ -18,7 +18,6 @@
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Location}
  * @see {@link https://gist.github.com/john-yuan/65d371be11da0b64636fc3d864ac44a8}
- * @see {@link https://github.com/john-yuan/snippets/blob/master/parseURL.js}
  * 
  * Note: The default value of the properties in the information is an empty string.
  * 
@@ -39,9 +38,11 @@ var parseURL = function (url) {
     url = '' + url;
 
     // get the protocol
-    RegExp.$1 = '';
-    regProtocol.test(url);
-    info.protocol = RegExp.$1;
+    if (regProtocol.test(url)) {
+        info.protocol = RegExp.$1;
+    } else {
+        info.protocol = '';
+    }
 
     // remove the protocol
     str = url.replace(regProtocol, '');
@@ -64,16 +65,15 @@ var parseURL = function (url) {
     info.hostname = arr[0];
     info.port = arr[1] || '';
 
-    // reset the records
-    RegExp.$1 = '';
-    RegExp.$2 = '';
-
     // get the search and hash
-    // the result will be saved in RegExp.$1 and RegExp.$2
-    regSearchAndHash.test(str);
+    if (regSearchAndHash.test(str)) {
+        info.search = RegExp.$1;
+        info.hash = RegExp.$2;
+    } else {
+        info.search = '';
+        info.hash = '';
+    }
 
-    info.search = RegExp.$1;
-    info.hash = RegExp.$2;
 
     // save the href
     info.href = info.origin + info.pathname + info.search + info.hash;
