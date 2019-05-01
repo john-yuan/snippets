@@ -80,7 +80,6 @@ var parseURL = function (url) {
         info.hash = '';
     }
 
-
     // save the href
     info.href = info.origin + info.pathname + info.search + info.hash;
 
