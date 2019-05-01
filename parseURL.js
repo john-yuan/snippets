@@ -1,6 +1,6 @@
 /**
  * Parse the URL string to get the details of the URL.
- * 
+ *
  * The names of the properties of the returned object is same with the names of
  * the properties in the `window.location` object in the browser, but the
  * returned object only have one method, that is toString().
@@ -18,9 +18,9 @@
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Location}
  * @see {@link https://gist.github.com/john-yuan/65d371be11da0b64636fc3d864ac44a8}
- * 
+ *
  * Note: The default value of the properties in the information is an empty string.
- * 
+ *
  * @author John Yuan <https://github.com/john-yuan>
  * @param {string} url The URL to be parsed
  * @returns {URLInformation} The parsed URL inforamtion
@@ -28,7 +28,7 @@
 var parseURL = function (url) {
     'use strict';
 
-    var regProtocol = /^([a-z][a-z0-9\-\.\+]*:)\/\//i;
+    var regProtocol = /^([a-z][a-z0-9\-\.\+]*:)?\/\//i;
     var regSearchAndHash = /(\?[^#]*)?(#.*)?$/;
     var info = {};
     var str = null;
@@ -39,26 +39,32 @@ var parseURL = function (url) {
 
     // get the protocol
     if (regProtocol.test(url)) {
+        str = url.replace(regProtocol, '');
+        arr = str.split('/');
+
         info.protocol = RegExp.$1;
+        info.host = arr[0];
+
+        arr.shift();
     } else {
+        str = url;
+        arr = str.split('/');
+
         info.protocol = '';
+        info.host = '';
     }
 
-    // remove the protocol
-    str = url.replace(regProtocol, '');
-
-    // get the host
-    arr = str.split('/');
-    info.host = arr[0];
-
     // get the pathname
-    arr.shift(); // remove the host
     str = '/' + arr.join('/');
 
     info.pathname = str.replace(regSearchAndHash, '');
 
     // save the origin
-    info.origin = info.protocol + '//' + info.host;
+    if (info.host) {
+        info.origin = info.protocol + '//' + info.host;
+    } else {
+        info.origin = '';
+    }
 
     // get the hostname and port
     arr = info.host.split(':');
@@ -90,7 +96,7 @@ var parseURL = function (url) {
 
 /**
  * Test the parseURL function with the given URL
- * 
+ *
  * @param {string} url The URL to test the parseURL function
  */
 var testParseURL = function (url) {
@@ -99,7 +105,7 @@ var testParseURL = function (url) {
     var i;
     var key;
     var keys = [
-        'protocol', 'hostname', 'port', 'pathname', 
+        'protocol', 'hostname', 'port', 'pathname',
         'search', 'hash', 'href', 'origin', 'host'
     ];
 
@@ -164,7 +170,7 @@ The output of the test:
     "hash": "#search-results-close-container",
     "href": "https://developer.mozilla.org:8080/en-US/search?q=URL#search-results-close-container"
 }
- 
+
 Test URL: https://developer.mozilla.org:8080
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -175,7 +181,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org:8080/")
 Test passed on key: origin ("https://developer.mozilla.org:8080")
 Test passed on key: host ("developer.mozilla.org:8080")
- 
+
 Test URL: https://developer.mozilla.org:8080/
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -186,7 +192,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org:8080/")
 Test passed on key: origin ("https://developer.mozilla.org:8080")
 Test passed on key: host ("developer.mozilla.org:8080")
- 
+
 Test URL: https://developer.mozilla.org:8080/en-US/search
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -197,7 +203,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org:8080/en-US/search")
 Test passed on key: origin ("https://developer.mozilla.org:8080")
 Test passed on key: host ("developer.mozilla.org:8080")
- 
+
 Test URL: https://developer.mozilla.org:8080/en-US/search?q=URL
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -208,7 +214,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org:8080/en-US/search?q=URL")
 Test passed on key: origin ("https://developer.mozilla.org:8080")
 Test passed on key: host ("developer.mozilla.org:8080")
- 
+
 Test URL: https://developer.mozilla.org:8080/en-US/search#search-results-close-container
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -219,7 +225,7 @@ Test passed on key: hash ("#search-results-close-container")
 Test passed on key: href ("https://developer.mozilla.org:8080/en-US/search#search-results-close-container")
 Test passed on key: origin ("https://developer.mozilla.org:8080")
 Test passed on key: host ("developer.mozilla.org:8080")
- 
+
 Test URL: https://developer.mozilla.org:8080/en-US/search?q=URL#search-results-close-container
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -230,7 +236,7 @@ Test passed on key: hash ("#search-results-close-container")
 Test passed on key: href ("https://developer.mozilla.org:8080/en-US/search?q=URL#search-results-close-container")
 Test passed on key: origin ("https://developer.mozilla.org:8080")
 Test passed on key: host ("developer.mozilla.org:8080")
- 
+
 Test URL: https://developer.mozilla.org
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -241,7 +247,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org/")
 Test passed on key: origin ("https://developer.mozilla.org")
 Test passed on key: host ("developer.mozilla.org")
- 
+
 Test URL: https://developer.mozilla.org/
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -252,7 +258,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org/")
 Test passed on key: origin ("https://developer.mozilla.org")
 Test passed on key: host ("developer.mozilla.org")
- 
+
 Test URL: https://developer.mozilla.org/en-US/search
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -263,7 +269,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org/en-US/search")
 Test passed on key: origin ("https://developer.mozilla.org")
 Test passed on key: host ("developer.mozilla.org")
- 
+
 Test URL: https://developer.mozilla.org/en-US/search?q=URL
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -274,7 +280,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://developer.mozilla.org/en-US/search?q=URL")
 Test passed on key: origin ("https://developer.mozilla.org")
 Test passed on key: host ("developer.mozilla.org")
- 
+
 Test URL: https://developer.mozilla.org/en-US/search#search-results-close-container
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -285,7 +291,7 @@ Test passed on key: hash ("#search-results-close-container")
 Test passed on key: href ("https://developer.mozilla.org/en-US/search#search-results-close-container")
 Test passed on key: origin ("https://developer.mozilla.org")
 Test passed on key: host ("developer.mozilla.org")
- 
+
 Test URL: https://developer.mozilla.org/en-US/search?q=URL#search-results-close-container
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("developer.mozilla.org")
@@ -296,7 +302,7 @@ Test passed on key: hash ("#search-results-close-container")
 Test passed on key: href ("https://developer.mozilla.org/en-US/search?q=URL#search-results-close-container")
 Test passed on key: origin ("https://developer.mozilla.org")
 Test passed on key: host ("developer.mozilla.org")
- 
+
 Test URL: https://example.org/badURL///
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("example.org")
@@ -307,7 +313,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://example.org/badURL///")
 Test passed on key: origin ("https://example.org")
 Test passed on key: host ("example.org")
- 
+
 Test URL: https://example.org/badURL///bad
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("example.org")
@@ -318,7 +324,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://example.org/badURL///bad")
 Test passed on key: origin ("https://example.org")
 Test passed on key: host ("example.org")
- 
+
 Test URL: https://example.org/badURL///bad//
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("example.org")
@@ -329,7 +335,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://example.org/badURL///bad//")
 Test passed on key: origin ("https://example.org")
 Test passed on key: host ("example.org")
- 
+
 Test URL: https://example.org/badURL/?search1?search2?search3
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("example.org")
@@ -340,7 +346,7 @@ Test passed on key: hash ("")
 Test passed on key: href ("https://example.org/badURL/?search1?search2?search3")
 Test passed on key: origin ("https://example.org")
 Test passed on key: host ("example.org")
- 
+
 Test URL: https://example.org/badURL/#hash1#hash2#hash3
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("example.org")
@@ -351,7 +357,7 @@ Test passed on key: hash ("#hash1#hash2#hash3")
 Test passed on key: href ("https://example.org/badURL/#hash1#hash2#hash3")
 Test passed on key: origin ("https://example.org")
 Test passed on key: host ("example.org")
- 
+
 Test URL: https://example.org/badURL/?search1?search2?search3#hash1#hash2#hash3
 Test passed on key: protocol ("https:")
 Test passed on key: hostname ("example.org")
